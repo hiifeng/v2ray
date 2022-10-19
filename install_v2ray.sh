@@ -195,7 +195,7 @@ normalizeVersion() {
 
 # 1: new V2Ray. 0: no. 1: yes. 2: not installed. 3: check failed.
 getVersion() {
-    VER="$(/usr/bin/v2ray/v2ray -version 2>/dev/null)"
+    VER="$(/usr/bin/v2ray/v2ray version 2>/dev/null)"
     RETVAL=$?
     CUR_VER="$(normalizeVersion "$(echo "$VER" | head -n 1 | cut -d " " -f2)")"
     TAG_URL="https://api.github.com/repos/v2fly/v2ray-core/releases/latest"
