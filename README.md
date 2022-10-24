@@ -1,7 +1,7 @@
 # v2ray
 V2ray多合一脚本，支持VMESS+websocket+TLS+Nginx、VLESS+TCP+XTLS、VLESS+TCP+TLS等组合
 
-脚本原作者为网络跳越，网络跳越由于工作原因，停止维护该脚本，目前由ifeng开始维护。维护后的脚本可以在纯ipv6网络环境的主机上使用。
+脚本原作者为网络跳越，网络跳越由于工作原因，停止维护该脚本，目前由ifeng开始维护。维护后的脚本可以在纯ipv6网络环境的主机上使用。使用过程中遇到问题，欢迎进入Tg群组（ https://t.me/HiaiFeng ）交流。
 
 脚本支持：
 <li>VMESS，即最普通的V2ray服务器，没有伪装，也不是VLESS</li>
