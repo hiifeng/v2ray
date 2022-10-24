@@ -195,11 +195,11 @@ normalizeVersion() {
 
 # 1: new V2Ray. 0: no. 1: yes. 2: not installed. 3: check failed.
 getVersion() {
-	if /usr/bin/v2ray/v2ray -version >/dev/null 2>&1;then
-		VER="$(/usr/bin/v2ray/v2ray -version | awk 'NR==1 {print $2}')"
-	else
-		VER="$(/usr/bin/v2ray/v2ray version | awk 'NR==1 {print $2}')"
-	fi
+    if /usr/bin/v2ray/v2ray -version >/dev/null 2>&1;then
+	VER="$(/usr/bin/v2ray/v2ray -version | awk 'NR==1 {print $2}')"
+    else
+	VER="$(/usr/bin/v2ray/v2ray version | awk 'NR==1 {print $2}')"
+    fi
     RETVAL=$?
     CUR_VER="$(normalizeVersion "$(echo "$VER" | head -n 1 | cut -d " " -f2)")"
     TAG_URL="https://api.github.com/repos/v2fly/v2ray-core/releases/latest"
@@ -859,23 +859,23 @@ installV2ray() {
         colorEcho $RED " 下载V2ray文件失败，请检查服务器网络设置"
         exit 1
     fi
-	v2ray_start_config="run -c"
+    v2ray_start_config="run -c"
     mkdir -p '/etc/v2ray' '/var/log/v2ray' && \
     unzip /tmp/v2ray/v2ray.zip -d /tmp/v2ray
     mkdir -p /usr/bin/v2ray
-	cp /tmp/v2ray/v2ray /usr/bin/v2ray/; cp /tmp/v2ray/geo* /usr/bin/v2ray/;
-	chmod +x '/usr/bin/v2ray/v2ray' || {
-        colorEcho $RED " V2ray安装失败"
-        exit 1
+    cp /tmp/v2ray/v2ray /usr/bin/v2ray/; cp /tmp/v2ray/geo* /usr/bin/v2ray/;
+    chmod +x '/usr/bin/v2ray/v2ray' || {
+    colorEcho $RED " V2ray安装失败"
+    exit 1
     }
-	if [[ "$NEW_VER" = "v4.32.1" ]]; then
-		cp /tmp/v2ray/v2ctl /usr/bin/v2ray/;
-		chmod +x '/usr/bin/v2ray/v2ctl' || {
+    if [[ "$NEW_VER" = "v4.32.1" ]]; then
+	cp /tmp/v2ray/v2ctl /usr/bin/v2ray/;
+	chmod +x '/usr/bin/v2ray/v2ctl' || {
         colorEcho $RED " V2ray安装失败"
         exit 1
-		}
-		v2ray_start_config="-config"
-	fi
+	}
+	v2ray_start_config="-config"
+    fi
 
     cat >$SERVICE_FILE<<-EOF
 [Unit]
