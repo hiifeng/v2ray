@@ -20,6 +20,8 @@ bash <(curl -sL https://raw.githubusercontent.com/hiifeng/v2ray/main/install_v2r
 如果没有出现安装菜单，CentOS系统请输入 yum install -y curl，Ubuntu/Debian系统请输入 sudo apt install -y curl，然后再次运行上面的命令。<br>
 <br>
 <p>维护更新：</p>
+2022年10月24日<br>
+<p>修改VLESS启动失败bug。</p>
 2022年10月18日<br>
 1、修改纯ipv6网络环境下，申请ssl证书失败等bug。<br>
 2、修改安装V2ray最新版本v5.1.0程序异常bug。
