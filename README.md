@@ -20,6 +20,8 @@ bash <(curl -sL https://raw.githubusercontent.com/hiifeng/v2ray/main/install_v2r
 如果没有出现安装菜单，CentOS系统请输入 yum install -y curl，Ubuntu/Debian系统请输入 sudo apt install -y curl，然后再次运行上面的命令。<br>
 <br>
 <p>维护更新：</p>
+2022年11月03日<br>
+<p>修改访问伪装网站提示error code: 1034错误。</p>
 2022年10月24日<br>
 <p>修改VLESS启动失败bug。</p>
 2022年10月18日<br>
