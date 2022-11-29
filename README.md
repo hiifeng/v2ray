@@ -20,6 +20,8 @@ bash <(curl -sL https://raw.githubusercontent.com/hiifeng/v2ray/main/install_v2r
 如果没有出现安装菜单，CentOS系统请输入 yum install -y curl，Ubuntu/Debian系统请输入 sudo apt install -y curl，然后再次运行上面的命令。<br>
 <br>
 <p>维护更新：</p>
+2022年11月29日<br>
+<p>解决通过Github API获取v2ray最新版本失败问题，Github API对于普通用户限制（x-ratelimit-limit）每小时只允许60次请求。对于ipv6 only主机在使用dns64后，由于出口ipv4地址一致，当多人同时调用Github API，造成超出限额，获取v2ray最新版本失败。</p>
 2022年11月03日<br>
 <p>修改访问伪装网站提示error code: 1034错误。</p>
 2022年10月24日<br>
