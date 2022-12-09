@@ -699,12 +699,14 @@ server {
     charset utf-8;
 
     # ssl配置
-    ssl_protocols TLSv1.1 TLSv1.2;
-    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
-    ssl_ecdh_curve secp384r1;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers TLS13-AES-256-GCM-SHA384:TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-128-CCM-8-SHA256:TLS13-AES-128-CCM-SHA256:EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;
     ssl_prefer_server_ciphers on;
-    ssl_session_cache shared:SSL:10m;
+    ssl_session_cache builtin:1000 shared:SSL:10m;
     ssl_session_timeout 10m;
+    ssl_buffer_size 1400;
+    ssl_stapling on;
+    ssl_stapling_verify on;
     ssl_session_tickets off;
     ssl_certificate $CERT_FILE;
     ssl_certificate_key $KEY_FILE;
