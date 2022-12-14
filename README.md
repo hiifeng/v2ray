@@ -20,6 +20,8 @@ bash <(curl -sL https://raw.githubusercontent.com/hiifeng/v2ray/main/install_v2r
 如果没有出现安装菜单，CentOS系统请输入 yum install -y curl，Ubuntu/Debian系统请输入 sudo apt install -y curl，然后再次运行上面的命令。<br>
 <br>
 <p>维护更新：</p>
+2022年12月14日<br>
+<p>修改在ipv4&ipv6双栈主机下，DNS同时解析ipv4和ipv6记录，脚本判断域名是否解析正确的Bug。</p>
 2022年12月09日<br>
 <p>升级TLS版本，排除安全隐患，提高nginx性能。</p>
 2022年11月29日<br>
