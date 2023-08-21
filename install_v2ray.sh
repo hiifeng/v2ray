@@ -889,6 +889,9 @@ installV2ray() {
 	v2ray_start_config="-config"
     fi
 
+    touch /var/log/v2ray/error.log
+    chown nobody /var/log/v2ray/error.log
+
     cat >$SERVICE_FILE<<-EOF
 [Unit]
 Description=V2ray Service
@@ -907,17 +910,37 @@ User=nobody
 NoNewPrivileges=true
 ExecStart=/usr/bin/v2ray/v2ray $v2ray_start_config /etc/v2ray/config.json
 Restart=on-failure
+StandardOutput=null
+StandardError=inherit
 
 [Install]
 WantedBy=multi-user.target
 EOF
+
+    cat >/etc/logrotate.d/v2ray<<-EOF
+/var/log/v2ray/*.log {
+daily
+size 1k
+maxsize 1MB
+missingok
+rotate 1
+notifempty
+copytruncate
+}
+EOF
+
     systemctl daemon-reload
+    systemctl restart logrotate.service
     systemctl enable v2ray.service
 }
 
 trojanConfig() {
     cat > $CONFIG_FILE<<-EOF
 {
+  "log": {
+    "loglevel": "error",
+    "error": "/var/log/v2ray/error.log"
+  },
   "inbounds": [{
     "port": $PORT,
     "protocol": "trojan",
@@ -968,6 +991,10 @@ EOF
 trojanXTLSConfig() {
     cat > $CONFIG_FILE<<-EOF
 {
+  "log": {
+    "loglevel": "error",
+    "error": "/var/log/v2ray/error.log"
+  },
   "inbounds": [{
     "port": $PORT,
     "protocol": "trojan",
@@ -1021,6 +1048,10 @@ vmessConfig() {
     local alterid=`shuf -i50-80 -n1`
     cat > $CONFIG_FILE<<-EOF
 {
+  "log": {
+    "loglevel": "error",
+    "error": "/var/log/v2ray/error.log"
+  },
   "inbounds": [{
     "port": $PORT,
     "protocol": "vmess",
@@ -1051,6 +1082,10 @@ vmessKCPConfig() {
     local alterid=`shuf -i50-80 -n1`
     cat > $CONFIG_FILE<<-EOF
 {
+  "log": {
+    "loglevel": "error",
+    "error": "/var/log/v2ray/error.log"
+  },
   "inbounds": [{
     "port": $PORT,
     "protocol": "vmess",
@@ -1092,6 +1127,10 @@ vmessTLSConfig() {
     local uuid="$(cat '/proc/sys/kernel/random/uuid')"
     cat > $CONFIG_FILE<<-EOF
 {
+  "log": {
+    "loglevel": "error",
+    "error": "/var/log/v2ray/error.log"
+  },
   "inbounds": [{
     "port": $PORT,
     "protocol": "vmess",
@@ -1136,6 +1175,10 @@ vmessWSConfig() {
     local uuid="$(cat '/proc/sys/kernel/random/uuid')"
     cat > $CONFIG_FILE<<-EOF
 {
+  "log": {
+    "loglevel": "error",
+    "error": "/var/log/v2ray/error.log"
+  },
   "inbounds": [{
     "port": $V2PORT,
     "listen": "127.0.0.1",
@@ -1176,6 +1219,10 @@ vlessTLSConfig() {
     local uuid="$(cat '/proc/sys/kernel/random/uuid')"
     cat > $CONFIG_FILE<<-EOF
 {
+  "log": {
+    "loglevel": "error",
+    "error": "/var/log/v2ray/error.log"
+  },
   "inbounds": [{
     "port": $PORT,
     "protocol": "vless",
@@ -1229,6 +1276,10 @@ vlessXTLSConfig() {
     local uuid="$(cat '/proc/sys/kernel/random/uuid')"
     cat > $CONFIG_FILE<<-EOF
 {
+  "log": {
+    "loglevel": "error",
+    "error": "/var/log/v2ray/error.log"
+  },
   "inbounds": [{
     "port": $PORT,
     "protocol": "vless",
@@ -1283,6 +1334,10 @@ vlessWSConfig() {
     local uuid="$(cat '/proc/sys/kernel/random/uuid')"
     cat > $CONFIG_FILE<<-EOF
 {
+  "log": {
+    "loglevel": "error",
+    "error": "/var/log/v2ray/error.log"
+  },
   "inbounds": [{
     "port": $V2PORT,
     "listen": "127.0.0.1",
@@ -1323,6 +1378,10 @@ vlessKCPConfig() {
     local uuid="$(cat '/proc/sys/kernel/random/uuid')"
     cat > $CONFIG_FILE<<-EOF
 {
+  "log": {
+    "loglevel": "error",
+    "error": "/var/log/v2ray/error.log"
+  },
   "inbounds": [{
     "port": $PORT,
     "protocol": "vless",
@@ -1416,7 +1475,7 @@ install() {
     $PMT clean all
     [[ "$PMT" = "apt" ]] && $PMT update
     #echo $CMD_UPGRADE | bash
-    $CMD_INSTALL wget vim unzip tar gcc openssl
+    $CMD_INSTALL wget unzip tar openssl logrotate
     $CMD_INSTALL net-tools
     if [[ "$PMT" = "apt" ]]; then
         $CMD_INSTALL libssl-dev g++
@@ -1511,6 +1570,8 @@ uninstall() {
         rm -rf $SERVICE_FILE
         rm -rf /etc/v2ray
         rm -rf /usr/bin/v2ray
+        rm -rf /var/log/v2ray
+        rm /etc/logrotate.d/v2ray
 
         if [[ "$BT" = "false" ]]; then
             systemctl disable nginx
@@ -1827,7 +1888,8 @@ showLog() {
         return
     fi
 
-    journalctl -xen -u v2ray --no-pager
+    # journalctl -xen -u v2ray --no-pager
+    tail -f /var/log/v2ray/*.log
 }
 
 menu() {
