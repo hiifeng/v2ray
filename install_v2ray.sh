@@ -902,8 +902,8 @@ Type=simple
 # This service runs as root. You may consider to run it as another user for security concerns.
 # By uncommenting User=nobody and commenting out User=root, the service will run as user nobody.
 # More discussion at https://github.com/v2ray/v2ray-core/issues/1011
-User=root
-#User=nobody
+# User=root
+User=nobody
 NoNewPrivileges=true
 ExecStart=/usr/bin/v2ray/v2ray $v2ray_start_config /etc/v2ray/config.json
 Restart=on-failure
