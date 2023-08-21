@@ -721,6 +721,9 @@ server {
     $ROBOT_CONFIG
 
     location ${WSPATH} {
+      # Privacy: Do Not Log Proxy Access
+      access_log off;
+
       proxy_redirect off;
       proxy_pass http://127.0.0.1:${V2PORT};
       proxy_http_version 1.1;
@@ -728,8 +731,8 @@ server {
       proxy_set_header Connection "upgrade";
       proxy_set_header Host \$host;
       # Show real IP in v2ray access.log
-      proxy_set_header X-Real-IP \$remote_addr;
-      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+      #proxy_set_header X-Real-IP \$remote_addr;
+      #proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     }
 }
 EOF
