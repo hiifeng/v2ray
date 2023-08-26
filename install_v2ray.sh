@@ -34,7 +34,7 @@ SITES=(
 
 CONFIG_FILE="/etc/v2ray/config.json"
 SERVICE_FILE="/etc/systemd/system/v2ray.service"
-OS=`hostnamectl | grep -i system | cut -d: -f2`
+OS=$(hostnamectl | grep -i system | cut -d: -f2)
 
 # 检查服务器网络环境
 
@@ -67,7 +67,7 @@ sleep 3
 
 BT="false"
 NGINX_CONF_PATH="/etc/nginx/conf.d/"
-res=`which bt 2>/dev/null`
+res=$(which bt 2>/dev/null)
 
 if [[ "$res" != "" ]]; then
     BT="true"
@@ -88,9 +88,9 @@ checkSystem() {
         exit 1
     fi
 
-    res=`which yum 2>/dev/null`
+    res=$(which yum 2>/dev/null)
     if [[ "$?" != "0" ]]; then
-        res=`which apt 2>/dev/null`
+        res=$(which apt 2>/dev/null)
         if [[ "$?" != "0" ]]; then
             colorEcho $RED " 不受支持的Linux系统"
             exit 1
@@ -105,7 +105,7 @@ checkSystem() {
         CMD_REMOVE="yum remove -y "
         CMD_UPGRADE="yum update -y"
     fi
-    res=`which systemctl 2>/dev/null`
+    res=$(which systemctl 2>/dev/null)
     if [[ "$?" != "0" ]]; then
         colorEcho $RED " 系统版本过低，请升级到最新版本"
         exit 1
@@ -113,7 +113,7 @@ checkSystem() {
 }
 
 configNeedNginx() {
-    local ws=`grep wsSettings $CONFIG_FILE`
+    local ws=$(grep wsSettings $CONFIG_FILE)
     if [[ -z "$ws" ]]; then
         echo no
         return
@@ -138,17 +138,17 @@ status() {
         echo 1
         return
     fi
-    port=`grep port $CONFIG_FILE| head -n 1| cut -d: -f2| tr -d \",' '`
-    res=`ss -nutlp| grep ${port} | grep -i v2ray`
+    port=$(grep port $CONFIG_FILE| head -n 1| cut -d: -f2| tr -d \",' ')
+    res=$(ss -nutlp| grep "$port" | grep -i v2ray)
     if [[ -z "$res" ]]; then
         echo 2
         return
     fi
 
-    if [[ `configNeedNginx` != "yes" ]]; then
+    if [[ $(configNeedNginx) != "yes" ]]; then
         echo 3
     else
-        res=`ss -nutlp|grep -i nginx`
+        res=$(ss -nutlp|grep -i nginx)
         if [[ -z "$res" ]]; then
             echo 4
         else
@@ -158,7 +158,7 @@ status() {
 }
 
 statusText() {
-    res=`status`
+    res=$(status)
     case $res in
         2)
             echo -e ${GREEN}已安装${PLAIN} ${RED}未运行${PLAIN}
@@ -309,7 +309,8 @@ getData() {
 			colorEcho ${BLUE}  " ${DOMAIN} 解析结果：${resolve}"
 		fi
                 colorEcho ${RED}  " 域名未解析到当前服务器IP("${BLUE}"ipv4:"${RED}"${v4} / "${BLUE}"ipv6:"${RED}"${v6} )!"
-                exit 1
+                colorEcho ${BLUE} "  请核实域名和IP地址。如果已经配置CDN Proxy，可无视以上提醒并按回车继续。"
+                read -p ""
             fi
         fi
     fi
@@ -508,13 +509,13 @@ installNginx() {
         if [[ "$PMT" = "yum" ]]; then
             $CMD_INSTALL epel-release
             if [[ "$?" != "0" ]]; then
-                echo '[nginx-stable]
+                echo "[nginx-stable]
 name=nginx stable repo
 baseurl=http://nginx.org/packages/centos/$releasever/$basearch/
 gpgcheck=1
 enabled=1
 gpgkey=https://nginx.org/keys/nginx_signing.key
-module_hotfixes=true' > /etc/yum.repos.d/nginx.repo
+module_hotfixes=true" > /etc/yum.repos.d/nginx.repo
             fi
         fi
         $CMD_INSTALL nginx
@@ -524,7 +525,7 @@ module_hotfixes=true' > /etc/yum.repos.d/nginx.repo
         fi
         systemctl enable nginx
     else
-        res=`which nginx 2>/dev/null`
+        res=$(which nginx 2>/dev/null)
         if [[ "$?" != "0" ]]; then
             colorEcho $RED " 您安装了宝塔，请在宝塔后台安装nginx后再运行本脚本"
             exit 1
@@ -544,7 +545,7 @@ stopNginx() {
     if [[ "$BT" = "false" ]]; then
         systemctl stop nginx
     else
-        res=`ps aux | grep -i nginx`
+        res=$(ps aux | grep -i nginx)
         if [[ "$res" != "" ]]; then
             nginx -s stop
         fi
@@ -556,7 +557,7 @@ getCert() {
     if [[ -z ${CERT_FILE+x} ]]; then
         stopNginx
         sleep 2
-        res=`netstat -ntlp| grep -E ':80 |:443 '`
+        res=$(netstat -ntlp| grep -E ':80 |:443 ')
         if [[ "${res}" != "" ]]; then
             colorEcho ${RED}  " 其他进程占用了80或443端口，请先关闭再运行一键脚本"
             echo " 端口占用信息如下："
@@ -581,15 +582,15 @@ getCert() {
 
 		if [[ "$ipv6Status" = "on" ]]; then
 			if [[ "$BT" = "false" ]]; then
-				~/.acme.sh/acme.sh   --issue -d $DOMAIN --keylength ec-256 --pre-hook "systemctl stop nginx" --post-hook "systemctl restart nginx"  --standalone --listen-v6 --insecure
+				~/.acme.sh/acme.sh   --issue -d "$DOMAIN" --keylength ec-256 --pre-hook "systemctl stop nginx" --post-hook "systemctl restart nginx"  --standalone --listen-v6
 			else
-				~/.acme.sh/acme.sh   --issue -d $DOMAIN --keylength ec-256 --pre-hook "nginx -s stop || { echo -n ''; }" --post-hook "nginx -c /www/server/nginx/conf/nginx.conf || { echo -n ''; }"  --standalone --listen-v6 --insecure
+				~/.acme.sh/acme.sh   --issue -d "$DOMAIN" --keylength ec-256 --pre-hook "nginx -s stop || { echo -n ''; }" --post-hook "nginx -c /www/server/nginx/conf/nginx.conf || { echo -n ''; }"  --standalone --listen-v6
 			fi
 		else
 			if [[ "$BT" = "false" ]]; then
-				~/.acme.sh/acme.sh   --issue -d $DOMAIN --keylength ec-256 --pre-hook "systemctl stop nginx" --post-hook "systemctl restart nginx"  --standalone --insecure
+				~/.acme.sh/acme.sh   --issue -d "$DOMAIN" --keylength ec-256 --pre-hook "systemctl stop nginx" --post-hook "systemctl restart nginx"  --standalone
 			else
-				~/.acme.sh/acme.sh   --issue -d $DOMAIN --keylength ec-256 --pre-hook "nginx -s stop || { echo -n ''; }" --post-hook "nginx -c /www/server/nginx/conf/nginx.conf || { echo -n ''; }"  --standalone --insecure
+				~/.acme.sh/acme.sh   --issue -d "$DOMAIN" --keylength ec-256 --pre-hook "nginx -s stop || { echo -n ''; }" --post-hook "nginx -c /www/server/nginx/conf/nginx.conf || { echo -n ''; }"  --standalone
 			fi
 		fi		
 		
@@ -599,17 +600,17 @@ getCert() {
         }
         KEY_FILE="/etc/v2ray/${DOMAIN}.key"
 		CERT_FILE="/etc/v2ray/${DOMAIN}.pem"
-        ~/.acme.sh/acme.sh  --install-cert -d $DOMAIN --ecc \
-            --key-file       $KEY_FILE  \
-            --fullchain-file $CERT_FILE \
+        ~/.acme.sh/acme.sh  --install-cert -d "$DOMAIN" --ecc \
+            --key-file       "$KEY_FILE"  \
+            --fullchain-file "$CERT_FILE" \
             --reloadcmd     "service nginx force-reload"
         [[ -f $CERT_FILE && -f $KEY_FILE ]] || {
             colorEcho $RED " 获取证书失败，请到 https://www.hicairo.com 反馈"
             exit 1
         }
     else
-        cp ~/v2ray.pem /etc/v2ray/${DOMAIN}.pem
-        cp ~/v2ray.key /etc/v2ray/${DOMAIN}.key
+        cp ~/v2ray.pem "/etc/v2ray/$DOMAIN.pem"
+        cp ~/v2ray.key "/etc/v2ray/$DOMAIN.key"
     fi
 }
 
@@ -1528,7 +1529,7 @@ bbrReboot() {
 }
 
 update() {
-    res=`status`
+    res=$(status)
     if [[ $res -lt 2 ]]; then
         colorEcho $RED " V2ray未安装，请先安装！"
         return
@@ -1551,7 +1552,7 @@ update() {
 }
 
 uninstall() {
-    res=`status`
+    res=$(status)
     if [[ $res -lt 2 ]]; then
         colorEcho $RED " V2ray未安装，请先安装！"
         return
@@ -1560,9 +1561,9 @@ uninstall() {
     echo ""
     read -p " 确定卸载V2ray？[y/n]：" answer
     if [[ "${answer,,}" = "y" ]]; then
-        domain=`grep Host $CONFIG_FILE | cut -d: -f2 | tr -d \",' '`
+        domain=$(grep Host $CONFIG_FILE | cut -d: -f2 | tr -d \",' ')
         if [[ "$domain" = "" ]]; then
-            domain=`grep serverName $CONFIG_FILE | cut -d: -f2 | tr -d \",' '`
+            domain=$(grep serverName $CONFIG_FILE | cut -d: -f2 | tr -d \",' ')
         fi
         
         stop
@@ -1593,7 +1594,7 @@ uninstall() {
 }
 
 start() {
-    res=`status`
+    res=$(status)
     if [[ $res -lt 2 ]]; then
         colorEcho $RED " V2ray未安装，请先安装！"
         return
@@ -1602,8 +1603,8 @@ start() {
     startNginx
     systemctl restart v2ray
     sleep 2
-    port=`grep port $CONFIG_FILE| head -n 1| cut -d: -f2| tr -d \",' '`
-    res=`ss -nutlp| grep ${port} | grep -i v2ray`
+    port=$(grep port $CONFIG_FILE| head -n 1| cut -d: -f2| tr -d \",' ')
+    res=$(ss -nutlp| grep "$port" | grep -i v2ray)
     if [[ "$res" = "" ]]; then
         colorEcho $RED " v2ray启动失败，请检查日志或查看端口是否被占用！"
     else
@@ -1619,7 +1620,7 @@ stop() {
 
 
 restart() {
-    res=`status`
+    res=$(status)
     if [[ $res -lt 2 ]]; then
         colorEcho $RED " V2ray未安装，请先安装！"
         return
@@ -1702,7 +1703,7 @@ outputVmess() {
   \"path\":\"\",
   \"tls\":\"\"
 }"
-    link=`echo -n ${raw} | base64 -w 0`
+    link=$(echo -n "$raw" | base64 -w 0)
     link="vmess://${link}"
 
     echo -e "   ${BLUE}IP(address): ${PLAIN} ${RED}${IP}${PLAIN}"
@@ -1758,7 +1759,7 @@ outputVmessTLS() {
   \"path\":\"\",
   \"tls\":\"tls\"
 }"
-    link=`echo -n ${raw} | base64 -w 0`
+    link=$(echo -n "$raw" | base64 -w 0)
     link="vmess://${link}"
     echo -e "   ${BLUE}IP(address): ${PLAIN} ${RED}${IP}${PLAIN}"
     echo -e "   ${BLUE}端口(port)：${PLAIN}${RED}${port}${PLAIN}"
@@ -1786,7 +1787,7 @@ outputVmessWS() {
   \"path\":\"${wspath}\",
   \"tls\":\"tls\"
 }"
-    link=`echo -n ${raw} | base64 -w 0`
+    link=$(echo -n "$raw" | base64 -w 0)
     link="vmess://${link}"
 
     echo -e "   ${BLUE}IP(address): ${PLAIN} ${RED}${IP}${PLAIN}"
@@ -1804,7 +1805,7 @@ outputVmessWS() {
 }
 
 showInfo() {
-    res=`status`
+    res=$(status)
     if [[ $res -lt 2 ]]; then
         colorEcho $RED " V2ray未安装，请先安装！"
         return
@@ -1882,7 +1883,7 @@ showInfo() {
 }
 
 showLog() {
-    res=`status`
+    res=$(status)
     if [[ $res -lt 2 ]]; then
         colorEcho $RED " V2ray未安装，请先安装！"
         return
@@ -2025,7 +2026,7 @@ case "$action" in
         ;;
     *)
         echo " 参数错误"
-        echo " 用法: `basename $0` [menu|update|uninstall|start|restart|stop|showInfo|showLog]"
+        echo " 用法: $(basename $0) [menu|update|uninstall|start|restart|stop|showInfo|showLog]"
         ;;
 esac
 
