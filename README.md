@@ -1,4 +1,4 @@
-<a href="https://dartnode.com/?via=ifeng" target="_blank"><img src="https://status.dartnode.com/upload/logo1.png" width="100px"></a><br>
+<a href="https://dartnode.com/?aff=ifeng" target="_blank"><img src="https://status.dartnode.com/upload/logo1.png" width="100px"></a><br>
 I am honored that DARTNODE is offering a free server to sponsor my project.<br>
 DARTNODE's official Web Site : [https://dartnode.com](https://dartnode.com/?via=ifeng)
 
