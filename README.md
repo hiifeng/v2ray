@@ -1,6 +1,6 @@
 <a href="https://dartnode.com/?aff=ifeng" target="_blank"><img src="https://status.dartnode.com/upload/logo1.png" width="100px"></a><br>
 I am honored that DARTNODE is offering a free server to sponsor my project.<br>
-DARTNODE's official Web Site : [https://dartnode.com](https://dartnode.com/?via=ifeng)
+DARTNODE's official Web Site : [https://dartnode.com](https://dartnode.com/?aff=ifeng)
 
 # v2ray
 V2ray多合一脚本，支持VMESS+websocket+TLS+Nginx、VLESS+TCP+XTLS、VLESS+TCP+TLS等组合
