@@ -35,3 +35,7 @@ bash <(curl -sL https://raw.githubusercontent.com/hiifeng/v2ray/main/install_v2r
 2022年10月18日<br>
 1、修改纯ipv6网络环境下，申请ssl证书失败等bug。<br>
 2、修改安装V2ray最新版本v5.1.0程序异常bug。
+
+<br>赞助声明：<br>
+本项目由 [VTEXS](https://console.vtexs.com/?affid=1539) 的「开源项目免费 VPS 计划」提供算力支持。<br>
+感谢 VTEXS 对开源社区的支持！<br>
